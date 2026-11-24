@@ -1,0 +1,23 @@
+{
+  "name": "smart-garage-nextjs",
+  "version": "1.0.0",
+  "private": true,
+  "description": "AI-Powered Smart Garage Management System - Next.js on Vercel + Neon Postgres + Google Gemini",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "test": "node --test test/validate.test.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.0.2",
+    "bcryptjs": "^3.0.2",
+    "jose": "^6.1.0",
+    "next": "^16.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "engines": {
+    "node": ">=20.9.0"
+  }
+}

@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// =========================================================================
+// Cloud Storage Security Rules - SmartGarage AI
+// Vehicle images are stored at  vehicle-images/{uid}/{requestId}.jpg
+// - Only the owner can upload (images only, < 5 MB).
+// - Owner or an admin can read.
+// Only needed when NEXT_PUBLIC_IMAGE_STORAGE=storage (Blaze plan).
+// HOW TO APPLY: Firebase Console -> Storage -> Rules -> paste -> Publish.
+// =========================================================================
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /vehicle-images/{uid}/{fileName} {
+      allow read: if request.auth != null
+        && (request.auth.uid == uid
+            || firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+
+      allow create, update: if request.auth != null
+        && request.auth.uid == uid
+        && request.resource.size < 5 * 1024 * 1024
+        && request.resource.contentType.matches('image/.*');
+
+      allow delete: if false;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

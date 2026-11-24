@@ -1,0 +1,120 @@
+rules_version = '2';
+
+// =========================================================================
+// Cloud Firestore Security Rules - SmartGarage AI
+// - Customers can only create and read THEIR OWN service requests.
+// - Only admins (UID present in /admins) can read all requests and update
+//   the status. /admins can only be edited from the Firebase Console.
+// - requestImages holds compressed vehicle photos (free Spark plan mode).
+// HOW TO APPLY: Firebase Console -> Firestore Database -> Rules -> paste
+// this whole file -> Publish.
+// =========================================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    // ---------- Customer profiles ----------
+    match /users/{uid} {
+      allow read: if isOwner(uid) || isAdmin();
+
+      allow create: if isOwner(uid)
+        && request.resource.data.keys().hasOnly(['uid', 'name', 'email', 'phone', 'role', 'createdAt'])
+        && request.resource.data.uid == uid
+        && request.resource.data.role == 'customer'
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 80
+        && request.resource.data.phone is string
+        && request.resource.data.phone.size() <= 20
+        && request.resource.data.createdAt == request.time;
+
+      // Customers may edit name/phone only - never their role
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name', 'phone']);
+
+      allow delete: if false;
+    }
+
+    // ---------- Admin list (managed in Firebase Console only) ----------
+    match /admins/{uid} {
+      allow read: if isOwner(uid);
+      allow write: if false;
+    }
+
+    // ---------- Service requests ----------
+    match /serviceRequests/{requestId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customerId == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly([
+             'customerId', 'customerName', 'customerEmail', 'customerPhone',
+             'vehicle', 'problem', 'imageMode', 'imageUrl',
+             'aiAnalysis', 'aiStatus', 'status', 'adminNotes',
+             'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['customerId', 'vehicle', 'problem', 'status', 'createdAt'])
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.customerEmail == request.auth.token.email
+        && request.resource.data.status == 'Pending'
+        && request.resource.data.adminNotes == ''
+        && request.resource.data.problem is string
+        && request.resource.data.problem.size() >= 10
+        && request.resource.data.problem.size() <= 1500
+        && request.resource.data.vehicle is map
+        && request.resource.data.vehicle.brand is string
+        && request.resource.data.vehicle.model is string
+        && request.resource.data.vehicle.regNumber is string
+        && request.resource.data.vehicle.regNumber.size() <= 15
+        && request.resource.data.vehicle.year is int
+        && (request.resource.data.aiAnalysis == null || request.resource.data.aiAnalysis is map)
+        && request.resource.data.aiStatus in ['completed', 'failed']
+        && request.resource.data.imageMode in ['none', 'firestore', 'storage']
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      // Only garage admins update status / notes
+      allow update: if isAdmin()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'adminNotes', 'updatedAt'])
+        && request.resource.data.status in ['Pending', 'In Progress', 'Completed']
+        && request.resource.data.adminNotes is string
+        && request.resource.data.adminNotes.size() <= 1000
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isAdmin();
+    }
+
+    // ---------- Vehicle images (Firestore mode, free plan) ----------
+    match /requestImages/{requestId} {
+      allow read: if isAdmin()
+        || (signedIn() && resource.data.customerId == request.auth.uid);
+
+      allow create: if signedIn()
+        && request.resource.data.keys().hasOnly(['customerId', 'dataUrl', 'createdAt'])
+        && request.resource.data.customerId == request.auth.uid
+        && request.resource.data.dataUrl is string
+        && request.resource.data.dataUrl.matches('^data:image/(jpeg|png|webp);base64,.*')
+        && request.resource.data.dataUrl.size() < 800000
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    // Deny everything else
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

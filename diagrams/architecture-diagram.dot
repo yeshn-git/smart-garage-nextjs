@@ -1,0 +1,39 @@
+digraph G {
+  graph [rankdir=TB, bgcolor="white", pad=0.4, nodesep=0.5, ranksep=0.6, fontname="Helvetica", label="AI-Powered Smart Garage Management System — Cloud Architecture (Vercel + Neon + Gemini)", labelloc=t, fontsize=20, fontcolor="#0a1428"];
+  node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=12, margin="0.25,0.12", penwidth=1.6];
+  edge [color="#2563eb", penwidth=1.6, fontname="Helvetica", fontsize=10, fontcolor="#334155"];
+
+  cust [label="INPUT\nCustomer (Browser / Mobile)\nVehicle details · Problem text · Optional photo", fillcolor="#e2e8f0", color="#0a1428"];
+  admin [label="Garage Admin / Staff\n(Browser)", fillcolor="#e2e8f0", color="#0a1428"];
+
+  subgraph cluster_vercel {
+    label="CLOUD PLATFORM: Vercel"; style="rounded,dashed"; color="#0a1428"; fontcolor="#0a1428"; fontsize=14;
+    web [label="Next.js Web Application (React UI)\nVercel Edge Network · CDN · HTTPS", fillcolor="#dbeafe", color="#2563eb"];
+    subgraph cluster_api {
+      label="Vercel Serverless Functions (Next.js API routes)"; style="rounded"; color="#93c5fd"; fontcolor="#1d4ed8"; fontsize=12;
+      authapi [label="/api/auth/*\nregister · login · logout · me\nbcrypt hashing · signed JWT httpOnly cookie", fillcolor="#eff6ff", color="#2563eb"];
+      reqapi [label="/api/requests\ncreate · list · status update\nrole checks (customer / admin)", fillcolor="#eff6ff", color="#2563eb"];
+      aiapi [label="/api/analyze\nvalidation · rate limit", fillcolor="#eff6ff", color="#2563eb"];
+    }
+    env [label="Environment Variables (server only)\nGEMINI_API_KEY · AUTH_SECRET · DATABASE_URL", fillcolor="#fef3c7", color="#d97706", shape=cylinder];
+  }
+
+  db [label="DATABASE\nNeon Serverless PostgreSQL\n(Vercel Marketplace)\nusers · service_requests · ai_usage", fillcolor="#dcfce7", color="#16a34a", shape=cylinder];
+  ai [label="AI PROCESSING\nGoogle Gemini API\n(gemini-2.5-flash, multimodal)\nCauses · Steps · Urgency · Inspection", fillcolor="#ede9fe", color="#7c3aed"];
+  out [label="OUTPUT\nCustomer Dashboard: AI analysis + status\nAdmin Dashboard: all requests, stats, status updates", fillcolor="#0a1428", fontcolor="white", color="#0a1428"];
+
+  cust -> web [label=" 1. HTTPS"];
+  admin -> web [label=" login"];
+  web -> authapi [label=" 2. Login"];
+  web -> reqapi [label=" 3. New request\n+ photo"];
+  web -> aiapi [label=" (AI Assistant)"];
+  reqapi -> ai [label=" 4. generateContent"];
+  aiapi -> ai;
+  ai -> reqapi [label=" 5. JSON analysis", style=dashed];
+  authapi -> db [label=" users"];
+  reqapi -> db [label=" 6. Save request\n+ image + AI result"];
+  env -> reqapi [style=dashed, color="#d97706"];
+  db -> out [label=" 7. Dashboards\n(auto-refresh 10 s)"];
+  out -> admin [label=" 8. View / update status", style=dashed, constraint=false];
+  {rank=same; cust; admin}
+}

@@ -1,0 +1,88 @@
+[
+  {
+    "customerName": "Ananya Rao",
+    "customerEmail": "ananya.sample@example.com",
+    "customerPhone": "9876500011",
+    "vehicle": { "brand": "Maruti Suzuki", "model": "Swift VXi", "year": 2019, "regNumber": "KA 01 MK 4521", "fuelType": "Petrol", "mileage": "48200" },
+    "problem": "Grinding metal noise when I press the brake pedal, and the car pulls slightly to the left while braking.",
+    "status": "Pending",
+    "aiAnalysis": {
+      "summary": "The grinding sound and pulling while braking strongly suggest worn front brake pads or an uneven brake disc on the left side.",
+      "urgency": "High",
+      "safetyWarning": "Reduced braking performance is a safety risk. Drive slowly and avoid highways until the brakes are inspected.",
+      "possibleCauses": [
+        { "cause": "Worn-out brake pads", "likelihood": "High", "explanation": "Metal backing plate touches the disc when the friction material is finished." },
+        { "cause": "Scored or warped brake disc", "likelihood": "Medium", "explanation": "Damaged disc surface causes noise and uneven braking." },
+        { "cause": "Sticking left caliper", "likelihood": "Medium", "explanation": "A caliper that does not release evenly makes the car pull to one side." }
+      ],
+      "troubleshootingSteps": [
+        "Note whether the noise happens on every brake application or only at low speed.",
+        "Check the brake fluid level in the reservoir (do not open it when hot).",
+        "Look through the wheel spokes for visible scoring on the disc.",
+        "Avoid hard braking and book an inspection as soon as possible."
+      ],
+      "inspectionRequired": true,
+      "inspectionReason": "Brakes are safety-critical and the symptoms indicate wear that needs replacement parts.",
+      "estimatedServiceType": "Brake service",
+      "disclaimer": "These AI suggestions are preliminary and do not replace a professional diagnosis by a qualified mechanic.",
+      "model": "sample-data"
+    }
+  },
+  {
+    "customerName": "Rohit Sharma",
+    "customerEmail": "rohit.sample@example.com",
+    "customerPhone": "9876500022",
+    "vehicle": { "brand": "Hyundai", "model": "Creta SX", "year": 2021, "regNumber": "KA 05 NB 7788", "fuelType": "Diesel", "mileage": "36500" },
+    "problem": "The AC is blowing warm air even on the coldest setting. The blower fan works but there is no cooling.",
+    "status": "In Progress",
+    "aiAnalysis": {
+      "summary": "Air is flowing but not cooling, which usually points to low refrigerant or a compressor/clutch problem.",
+      "urgency": "Low",
+      "safetyWarning": "",
+      "possibleCauses": [
+        { "cause": "Low refrigerant due to a leak", "likelihood": "High", "explanation": "Most common reason for warm air with a working blower." },
+        { "cause": "AC compressor clutch not engaging", "likelihood": "Medium", "explanation": "If the clutch does not engage, the refrigerant is not compressed." },
+        { "cause": "Blocked condenser", "likelihood": "Low", "explanation": "Dirt in front of the radiator reduces heat exchange." }
+      ],
+      "troubleshootingSteps": [
+        "Check that the AC button indicator light is on.",
+        "With the engine running and AC on, listen for a click from the engine bay.",
+        "Check the condenser in front of the radiator for leaves or dirt."
+      ],
+      "inspectionRequired": true,
+      "inspectionReason": "Refrigerant handling and leak testing need professional equipment.",
+      "estimatedServiceType": "AC service and gas refill",
+      "disclaimer": "These AI suggestions are preliminary and do not replace a professional diagnosis by a qualified mechanic.",
+      "model": "sample-data"
+    }
+  },
+  {
+    "customerName": "Priya Nair",
+    "customerEmail": "priya.sample@example.com",
+    "customerPhone": "9876500033",
+    "vehicle": { "brand": "Honda", "model": "Activa 6G", "year": 2022, "regNumber": "KA 03 HR 2210", "fuelType": "Petrol", "mileage": "12800" },
+    "problem": "The scooter takes many attempts to start in the morning and the horn sounds weak.",
+    "status": "Completed",
+    "adminNotes": "Battery replaced under warranty. Ready for pickup.",
+    "aiAnalysis": {
+      "summary": "Hard starting together with a weak horn points to a weak or discharged battery.",
+      "urgency": "Medium",
+      "safetyWarning": "",
+      "possibleCauses": [
+        { "cause": "Weak battery", "likelihood": "High", "explanation": "Low voltage affects both the starter and the horn." },
+        { "cause": "Loose or corroded battery terminals", "likelihood": "Medium", "explanation": "Poor contact reduces current flow." },
+        { "cause": "Faulty charging (regulator rectifier)", "likelihood": "Low", "explanation": "Battery is not recharged while riding." }
+      ],
+      "troubleshootingSteps": [
+        "Try the kick-start to confirm the engine itself starts.",
+        "Check whether the battery terminals are tight and clean.",
+        "Ride for 20-30 minutes and check whether starting improves."
+      ],
+      "inspectionRequired": true,
+      "inspectionReason": "A battery load test is needed to confirm whether replacement is required.",
+      "estimatedServiceType": "Battery & electrical check",
+      "disclaimer": "These AI suggestions are preliminary and do not replace a professional diagnosis by a qualified mechanic.",
+      "model": "sample-data"
+    }
+  }
+]
